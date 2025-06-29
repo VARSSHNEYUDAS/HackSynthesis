@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RecycLens - Sustainable Product Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2E7D32;
+      --primary-light: #4CAF50;
+      --primary-dark: #1B5E20;
+      --secondary: #FFA000;
+      --accent: #8BC34A;
+      --light: #F5F5F5;
+      --dark: #212121;
+      --gray: #757575;
+      --light-gray: #E0E0E0;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    h1 {
+      color: var(--primary);
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      color: var(--gray);
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+    
+    .form-container {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid var(--light-gray);
+      border-radius: 5px;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .upload-area {
+      border: 2px dashed var(--primary);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    
+    .upload-area:hover {
+      background-color: rgba(46, 125, 50, 0.05);
+    }
+    
+    .upload-icon {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .upload-text {
+      margin-bottom: 1rem;
+    }
+    
+    .file-input {
+      display: none;
+    }
+    
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-secondary {
+      background-color: var(--secondary);
+      color: var(--dark);
+    }
+    
+    .btn-secondary:hover {
+      background-color: #FF8F00;
+    }
+    
+    .btn-accent {
+      background-color: var(--accent);
+    }
+    
+    .result-container {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+    
+    .suggestions-container {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .result-title {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .suggestion-title {
+      color: var(--primary-dark);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .preview-image {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    
+    .loading {
+      display: none;
+      margin: 1rem 0;
+      text-align: center;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--primary);
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .suggestion-card {
+      background: var(--light);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--primary);
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 1.5rem;
+    }
+    
+    .suggestion-image {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    
+    .suggestion-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .suggestion-type {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    
+    .eco-alternative {
+      background-color: #E8F5E9;
+      color: var(--primary-dark);
+    }
+    
+    .diy {
+      background-color: #FFF8E1;
+      color: #FF8F00;
+    }
+    
+    .handmade {
+      background-color: #E3F2FD;
+      color: #1565C0;
+    }
+    
+    .recycle {
+      background-color: #F3E5F5;
+      color: #7B1FA2;
+    }
+    
+    .pickup {
+      background-color: #E0F7FA;
+      color: #00838F;
+    }
+    
+    .suggestion-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .suggestion-link:hover {
+      text-decoration: underline;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .decision-container {
+      background: #E8F5E9;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .decision-icon {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+    
+    .pickup-form {
+      background: #E0F7FA;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-top: 1.5rem;
+    }
+    
+    .pickup-form h4 {
+      margin-bottom: 1rem;
+      color: #00838F;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .pickup-partners {
+      margin-top: 1.5rem;
+    }
+    
+    .partner-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .partner-logo {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 50%;
+      border: 1px solid var(--light-gray);
+    }
+    
+    .partner-info {
+      flex: 1;
+    }
+    
+    .partner-name {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    
+    .partner-rating {
+      color: var(--secondary);
+      margin-bottom: 0.25rem;
+    }
+    
+    .partner-price {
+      font-weight: 500;
+      color: var(--primary);
+    }
+    
+    .select-partner {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    .pickup-confirmation {
+      text-align: center;
+      padding: 1.5rem;
+      background: #E8F5E9;
+      border-radius: 8px;
+      margin-top: 1rem;
+      display: none;
+    }
+    
+    .confirmation-icon {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .suggestion-options {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .suggestion-option {
+      background: white;
+      border: 1px solid var(--light-gray);
+      border-radius: 5px;
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .suggestion-option:hover {
+      border-color: var(--primary);
+    }
+    
+    .suggestion-option.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    /* Transport Analysis Styles */
+    .transport-analysis {
+      margin-top: 2rem;
+      background: #E0F7FA;
+      padding: 1.5rem;
+      border-radius: 8px;
+    }
+    
+    .transport-title {
+      color: #00838F;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .transport-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .transport-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .transport-card h5 {
+      margin-bottom: 0.5rem;
+      color: #00838F;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .transport-icon {
+      font-size: 1.2rem;
+      color: #00838F;
+    }
+    
+    .transport-value {
+      font-weight: 500;
+      font-size: 1.1rem;
+    }
+    
+    .transport-recommendation {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid #00838F;
+    }
+    
+    .transport-recommendation h5 {
+      color: #00838F;
+      margin-bottom: 0.5rem;
+    }
+    
+    .transport-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .size-badge {
+      background-color: #E1F5FE;
+      color: #0288D1;
+    }
+    
+    .weight-badge {
+      background-color: #F1F8E9;
+      color: #689F38;
+    }
+    
+    .special-badge {
+      background-color: #FFF3E0;
+      color: #EF6C00;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .suggestion-card {
+        grid-template-columns: 1fr;
+      }
+      
+      .suggestion-image {
+        height: auto;
+      }
+      
+      .partner-card {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .suggestion-options {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>RecycLens</h1>
+      <p class="subtitle">Sustainable product management with recycling and upcycling solutions</p>
+    </header>
+    
+    <div class="form-container">
+      <h3 class="result-title">
+        <i class="fas fa-upload"></i> Product Information
+      </h3>
+      
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">
+          <i class="fas fa-camera"></i>
+        </div>
+        <h3 class="upload-text">Upload Product Image</h3>
+        <p>Drag & drop your image here or click to browse</p>
+        <input type="file" id="fileInput" class="file-input" accept="image/*">
+      </div>
+      
+      <div id="mediaPreview" class="form-group"></div>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="productName">Product Name</label>
+          <input type="text" id="productName" placeholder="e.g., Plastic Bottle">
+        </div>
+        
+        <div class="form-group">
+          <label for="yearsUsed">Years Used</label>
+          <input type="number" id="yearsUsed" placeholder="e.g., 2">
+        </div>
+        
+        <div class="form-group">
+          <label for="modelNumber">Model/Type (if known)</label>
+          <input type="text" id="modelNumber" placeholder="e.g., PET Plastic">
+        </div>
+        
+        <div class="form-group">
+          <label for="productCondition">Current Condition</label>
+          <select id="productCondition">
+            <option value="">Select condition</option>
+            <option value="excellent">Excellent - Like new</option>
+            <option value="good">Good - Minor wear</option>
+            <option value="fair">Fair - Functional but worn</option>
+            <option value="poor">Poor - Not functional</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="productDescription">Detailed Description</label>
+        <textarea id="productDescription" placeholder="Describe any special features, damages, or other relevant information"></textarea>
+      </div>
+      
+      <div class="loading" id="loadingIndicator">
+        <div class="spinner"></div>
+        <p>Analyzing your product and validating information...</p>
+      </div>
+      
+      <button class="btn" id="submitBtn">
+        <i class="fas fa-search"></i> Analyze Product
+      </button>
+    </div>
+    
+    <div class="result-container hidden" id="resultContainer">
+      <h3 class="result-title">
+        <i class="fas fa-clipboard-check"></i> Analysis Result
+      </h3>
+      <div id="decisionResult" class="decision-container">
+        <i class="fas fa-check-circle decision-icon"></i>
+        <div>
+          <h4 id="decisionTitle">Product Identified</h4>
+          <p id="decisionText">We've identified your item and have recommendations.</p>
+        </div>
+      </div>
+      <div id="resultDetails"></div>
+      
+      <!-- Transport Analysis Section -->
+      <div id="transportAnalysis" class="transport-analysis hidden">
+        <h4 class="transport-title">
+          <i class="fas fa-truck"></i> Transport Analysis
+        </h4>
+        <div id="transportContent"></div>
+      </div>
+    </div>
+    
+    <div class="suggestions-container hidden" id="suggestionsContainer">
+      <h3 class="suggestion-title">
+        <i class="fas fa-lightbulb"></i> Recommended Actions
+      </h3>
+      
+      <div class="suggestion-options" id="suggestionOptions">
+        <div class="suggestion-option active" data-type="all">
+          <i class="fas fa-list"></i> All Suggestions
+        </div>
+        <div class="suggestion-option" data-type="eco_alternative">
+          <i class="fas fa-leaf"></i> Eco Alternatives
+        </div>
+        <div class="suggestion-option" data-type="DIY">
+          <i class="fas fa-tools"></i> DIY Ideas
+        </div>
+        <div class="suggestion-option" data-type="handmade_product">
+          <i class="fas fa-hands"></i> Handmade Products
+        </div>
+        <div class="suggestion-option" data-type="recycle">
+          <i class="fas fa-recycle"></i> Recycling Options
+        </div>
+      </div>
+      
+      <div id="suggestions"></div>
+      
+      <div id="pickupSection" class="pickup-form hidden">
+        <h4><i class="fas fa-truck"></i> Schedule a Pickup</h4>
+        <p>Choose from our local partners to collect your item:</p>
+        
+        <div class="pickup-partners" id="pickupPartners">
+          <!-- Partners will be loaded here dynamically -->
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="pickupDate">Preferred Date</label>
+            <input type="date" id="pickupDate" min="">
+          </div>
+          <div class="form-group">
+            <label for="pickupTime">Preferred Time</label>
+            <select id="pickupTime">
+              <option value="">Select time slot</option>
+              <option value="morning">Morning (9am-12pm)</option>
+              <option value="afternoon">Afternoon (1pm-5pm)</option>
+              <option value="evening">Evening (6pm-8pm)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="specialInstructions">Special Instructions</label>
+          <textarea id="specialInstructions" placeholder="Any specific instructions for pickup (e.g., gate code, fragile item)"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="contactNumber">Contact Number</label>
+          <input type="tel" id="contactNumber" placeholder="Phone number for pickup updates">
+        </div>
+        
+        <div class="pickup-confirmation" id="pickupConfirmation">
+          <div class="confirmation-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h4>Pickup Scheduled Successfully!</h4>
+          <p id="confirmationDetails"></p>
+          <button class="btn btn-accent" id="newPickupBtn">
+            <i class="fas fa-plus"></i> Schedule Another Pickup
+          </button>
+        </div>
+        
+        <button class="btn btn-accent" id="schedulePickupBtn">
+          <i class="fas fa-calendar-check"></i> Confirm Pickup
+        </button>
+      </div>
+    </div>
+    
+    <footer>
+      <p>© 2023 RecycLens | Empowering sustainable choices and supporting local businesses</p>
+    </footer>
+  </div>
+
+  <script>
+    // DOM Elements
+    const fileInput = document.getElementById("fileInput");
+    const uploadArea = document.getElementById("uploadArea");
+    const submitBtn = document.getElementById("submitBtn");
+    const mediaPreview = document.getElementById("mediaPreview");
+    const loadingIndicator = document.getElementById("loadingIndicator");
+    const resultContainer = document.getElementById("resultContainer");
+    const decisionTitle = document.getElementById("decisionTitle");
+    const decisionText = document.getElementById("decisionText");
+    const resultDetails = document.getElementById("resultDetails");
+    const transportAnalysis = document.getElementById("transportAnalysis");
+    const transportContent = document.getElementById("transportContent");
+    const suggestionsContainer = document.getElementById("suggestionsContainer");
+    const suggestionOptions = document.getElementById("suggestionOptions");
+    const suggestionsDiv = document.getElementById("suggestions");
+    const pickupSection = document.getElementById("pickupSection");
+    const pickupPartners = document.getElementById("pickupPartners");
+    const schedulePickupBtn = document.getElementById("schedulePickupBtn");
+    const pickupConfirmation = document.getElementById("pickupConfirmation");
+    const confirmationDetails = document.getElementById("confirmationDetails");
+    const newPickupBtn = document.getElementById("newPickupBtn");
+    
+    // Current suggestions data
+    let currentSuggestions = [];
+    
+    // Handle drag and drop
+    uploadArea.addEventListener("click", () => fileInput.click());
+    
+    uploadArea.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      uploadArea.style.backgroundColor = "rgba(46, 125, 50, 0.1)";
+    });
+    
+    uploadArea.addEventListener("dragleave", () => {
+      uploadArea.style.backgroundColor = "transparent";
+    });
+    
+    uploadArea.addEventListener("drop", (e) => {
+      e.preventDefault();
+      uploadArea.style.backgroundColor = "transparent";
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        displayMediaPreview();
+      }
+    });
+    
+    fileInput.addEventListener("change", displayMediaPreview);
+    
+    function displayMediaPreview() {
+      mediaPreview.innerHTML = "";
+      if (fileInput.files.length > 0) {
+        const previewTitle = document.createElement("p");
+        previewTitle.textContent = `Selected image:`;
+        previewTitle.style.fontWeight = "500";
+        previewTitle.style.marginBottom = "0.5rem";
+        mediaPreview.appendChild(previewTitle);
+        
+        const previewContainer = document.createElement("div");
+        previewContainer.style.display = "flex";
+        previewContainer.style.flexWrap = "wrap";
+        previewContainer.style.gap = "0.5rem";
+        
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const previewElement = document.createElement("div");
+          previewElement.style.position = "relative";
+          previewElement.style.width = "150px";
+          previewElement.style.height = "150px";
+          
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.objectFit = "cover";
+          img.style.borderRadius = "4px";
+          previewElement.appendChild(img);
+          
+          previewContainer.appendChild(previewElement);
+        };
+        reader.readAsDataURL(file);
+        
+        mediaPreview.appendChild(previewContainer);
+      }
+    }
+    
+    async function submitProduct() {
+      const productName = document.getElementById("productName").value.trim();
+      const yearsUsed = document.getElementById("yearsUsed").value.trim();
+      const modelNumber = document.getElementById("modelNumber").value.trim();
+      const productCondition = document.getElementById("productCondition").value;
+      const productDescription = document.getElementById("productDescription").value.trim();
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please upload an image of the product.");
+        return;
+      }
+      
+      loadingIndicator.style.display = "block";
+      submitBtn.disabled = true;
+      resultContainer.classList.add("hidden");
+      suggestionsContainer.classList.add("hidden");
+      suggestionsDiv.innerHTML = "";
+      
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      
+      try {
+        // Call the YOLO prediction endpoint
+        const predictionResponse = await fetch("http://127.0.0.1:5001/predict", {
+          method: "POST",
+          body: formData,
+        });
+        
+        if (!predictionResponse.ok) {
+          throw new Error(`Prediction API error! status: ${predictionResponse.status}`);
+        }
+        
+        const predictionData = await predictionResponse.json();
+        
+        // Store the suggestions for filtering
+        currentSuggestions = predictionData.suggestions || [];
+        
+        // Process the prediction response
+        resultContainer.classList.remove("hidden");
+        decisionTitle.textContent = "Product Identified";
+        decisionText.textContent = `Our system identified this as: ${capitalizeFirstLetter(predictionData.prediction)}`;
+        
+        // Display product details
+        resultDetails.innerHTML = `
+          <div style="margin-top: 1rem;">
+            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Product Details</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div>
+                <p><strong>Name:</strong> ${productName || 'Not specified'}</p>
+                <p><strong>Type:</strong> ${capitalizeFirstLetter(predictionData.prediction)}</p>
+                <p><strong>Material:</strong> ${predictionData.material || 'Unknown'}</p>
+              </div>
+              <div>
+                <p><strong>Years Used:</strong> ${yearsUsed || 'Not specified'}</p>
+                <p><strong>Condition:</strong> ${productCondition ? capitalizeFirstLetter(productCondition) : 'Not specified'}</p>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Add transport analysis
+        analyzeTransport(predictionData);
+        
+        // Display all suggestions initially
+        if (currentSuggestions.length > 0) {
+          suggestionsContainer.classList.remove("hidden");
+          displayFilteredSuggestions('all');
+        } else {
+          suggestionsDiv.innerHTML = '<p>No suggestions available for this item.</p>';
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        decisionTitle.textContent = "Analysis Failed";
+        decisionText.textContent = "There was an error processing your request. Please try again.";
+        resultContainer.classList.remove("hidden");
+      } finally {
+        loadingIndicator.style.display = "none";
+        submitBtn.disabled = false;
+      }
+    }
+    
+    // Analyze transport requirements
+    function analyzeTransport(productData) {
+      // Show transport analysis section
+      transportAnalysis.classList.remove("hidden");
+      
+      // Calculate dimensions (mock data - in a real app this would come from product data)
+      const length = Math.floor(Math.random() * 100) + 10; // cm
+      const width = Math.floor(Math.random() * 50) + 10; // cm
+      const height = Math.floor(Math.random() * 50) + 10; // cm
+      const volume = (length * width * height / 1000000).toFixed(2); // m³
+      const weight = Math.floor(Math.random() * 20) + 1; // kg
+      
+      // Determine transport type
+      let transportType, transportIcon;
+      if (volume < 0.05 && weight < 5) {
+        transportType = "Small Package";
+        transportIcon = "fa-box";
+      } else if (volume < 0.5 && weight < 20) {
+        transportType = "Standard Parcel";
+        transportIcon = "fa-box-open";
+      } else {
+        transportType = "Freight";
+        transportIcon = "fa-pallet";
+      }
+      
+      // Determine special requirements
+      const specialRequirements = [];
+      if (productData.material && ["glass", "ceramic"].includes(productData.material.toLowerCase())) {
+        specialRequirements.push("Fragile");
+      }
+      if (productData.material && ["chemical", "battery"].includes(productData.material.toLowerCase())) {
+        specialRequirements.push("Hazardous");
+      }
+      if (length > 150 || width > 150 || height > 150) {
+        specialRequirements.push("Oversized");
+      }
+      if (weight > 30) {
+        specialRequirements.push("Heavy Item");
+      }
+      
+      // Generate transport badges
+      const badgesHTML = specialRequirements.map(req => {
+        let badgeClass = "special-badge";
+        if (req === "Oversized") badgeClass = "size-badge";
+        if (req === "Heavy Item") badgeClass = "weight-badge";
+        
+        return `<span class="transport-badge ${badgeClass}">${req}</span>`;
+      }).join("");
+      
+      // Generate transport recommendation
+      let recommendation = "";
+      if (specialRequirements.length > 0) {
+        recommendation = `
+          <div class="transport-recommendation">
+            <h5><i class="fas fa-exclamation-triangle"></i> Special Handling Required</h5>
+            <p>This item requires special transport considerations:</p>
+            <div>${badgesHTML}</div>
+            <p style="margin-top: 0.5rem;">
+              <i class="fas fa-info-circle"></i> Please ensure proper packaging and labeling for safe transport.
+            </p>
+          </div>
+        `;
+      } else {
+        recommendation = `
+          <div class="transport-recommendation">
+            <h5><i class="fas fa-check-circle"></i> Standard Transport</h5>
+            <p>This item can be transported using standard methods without special requirements.</p>
+          </div>
+        `;
+      }
+      
+      // Display transport analysis
+      transportContent.innerHTML = `
+        <div class="transport-grid">
+          <div class="transport-card">
+            <h5><i class="fas fa-ruler-combined transport-icon"></i> Dimensions</h5>
+            <p>${length} × ${width} × ${height} cm</p>
+            <p class="transport-value">${volume} m³</p>
+          </div>
+          <div class="transport-card">
+            <h5><i class="fas fa-weight-hanging transport-icon"></i> Weight</h5>
+            <p class="transport-value">${weight} kg</p>
+          </div>
+          <div class="transport-card">
+            <h5><i class="fas ${transportIcon} transport-icon"></i> Transport Type</h5>
+            <p class="transport-value">${transportType}</p>
+          </div>
+          <div class="transport-card">
+            <h5><i class="fas fa-truck-loading transport-icon"></i> Handling</h5>
+            <p>${specialRequirements.length > 0 ? 'Special' : 'Standard'}</p>
+            <p class="transport-value">${specialRequirements.length} requirement(s)</p>
+          </div>
+        </div>
+        ${recommendation}
+      `;
+      
+      // Update pickup section based on analysis
+      if (["bottle", "can", "electronics", "paper", "cardboard", "furniture"].includes(productData.prediction.toLowerCase())) {
+        pickupSection.classList.remove("hidden");
+        loadPickupPartners(productData.prediction);
+      } else {
+        pickupSection.classList.add("hidden");
+      }
+    }
+    
+    // Display suggestions filtered by type
+    function displayFilteredSuggestions(filterType) {
+      suggestionsDiv.innerHTML = '';
+      
+      const filtered = filterType === 'all' 
+        ? currentSuggestions 
+        : currentSuggestions.filter(s => s.type === filterType);
+      
+      if (filtered.length === 0) {
+        suggestionsDiv.innerHTML = '<p>No suggestions of this type available.</p>';
+        return;
+      }
+      
+      filtered.forEach(suggestion => {
+        const suggestionCard = document.createElement("div");
+        suggestionCard.className = "suggestion-card";
+        
+        let typeClass = "";
+        let typeIcon = "";
+        switch(suggestion.type) {
+          case "eco_alternative":
+            typeClass = "eco-alternative";
+            typeIcon = "fa-leaf";
+            break;
+          case "DIY":
+            typeClass = "diy";
+            typeIcon = "fa-tools";
+            break;
+          case "handmade_product":
+            typeClass = "handmade";
+            typeIcon = "fa-hands";
+            break;
+          case "recycle":
+            typeClass = "recycle";
+            typeIcon = "fa-recycle";
+            break;
+        }
+        
+        suggestionCard.innerHTML = `
+          <div class="suggestion-content">
+            <div>
+              <span class="suggestion-type ${typeClass}">
+                <i class="fas ${typeIcon}"></i> ${formatSuggestionType(suggestion.type)}
+              </span>
+              <h4 style="margin-bottom: 0.5rem;">${suggestion.text.split(' — ')[0] || suggestion.text}</h4>
+              <p>${suggestion.text.split(' — ')[1] || ''}</p>
+            </div>
+            <div>
+              <a href="${suggestion.link}" target="_blank" class="suggestion-link">
+                Learn more <i class="fas fa-external-link-alt"></i>
+              </a>
+              ${suggestion.type === 'DIY' ? `
+                <div class="action-buttons">
+                  <button class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+                    <i class="fas fa-save"></i> Save Idea
+                  </button>
+                  <button class="btn" style="padding: 0.5rem 1rem;">
+                    <i class="fas fa-share-alt"></i> Share
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        suggestionsDiv.appendChild(suggestionCard);
+      });
+    }
+    
+    // Load available pickup partners based on item type
+    async function loadPickupPartners(itemType) {
+      pickupPartners.innerHTML = '<div class="loading" style="margin: 1rem 0;"><div class="spinner"></div><p>Loading available partners...</p></div>';
+      
+      try {
+        // Mock data - in a real app you would fetch this from your backend
+        const partners = [
+          {
+            id: 1,
+            name: "GreenCollect",
+            logo: "https://via.placeholder.com/60?text=GC",
+            rating: 4.7,
+            price: "Free",
+            estimatedPickup: "1-2 business days",
+            coverage: "Citywide"
+          },
+          {
+            id: 2,
+            name: "EcoHaul",
+            logo: "https://via.placeholder.com/60?text=EH",
+            rating: 4.5,
+            price: "$5 per item",
+            estimatedPickup: "Same day available",
+            coverage: "Downtown area"
+          },
+          {
+            id: 3,
+            name: "RecyclePro",
+            logo: "https://via.placeholder.com/60?text=RP",
+            rating: 4.9,
+            price: "Free for bulk items",
+            estimatedPickup: "Next business day",
+            coverage: "Metro area"
+          }
+        ];
+        
+        pickupPartners.innerHTML = '';
+        
+        partners.forEach(partner => {
+          const partnerCard = document.createElement("div");
+          partnerCard.className = "partner-card";
+          partnerCard.innerHTML = `
+            <img src="${partner.logo}" alt="${partner.name}" class="partner-logo">
+            <div class="partner-info">
+              <div class="partner-name">${partner.name}</div>
+              <div class="partner-rating">
+                ${'<i class="fas fa-star"></i>'.repeat(Math.floor(partner.rating))}
+                ${partner.rating % 1 ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                (${partner.rating})
+              </div>
+              <div>${partner.coverage} • ${partner.estimatedPickup}</div>
+            </div>
+            <div class="partner-price">${partner.price}</div>
+            <button class="select-partner" data-id="${partner.id}">
+              Select
+            </button>
+          `;
+          pickupPartners.appendChild(partnerCard);
+        });
+        
+        // Set minimum date for pickup (tomorrow)
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById("pickupDate").min = tomorrow.toISOString().split('T')[0];
+        
+        // Add event listeners to partner selection buttons
+        document.querySelectorAll('.select-partner').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const partnerId = this.getAttribute('data-id');
+            document.querySelectorAll('.partner-card').forEach(card => {
+              card.style.border = 'none';
+            });
+            this.parentElement.style.border = '2px solid var(--primary)';
+          });
+        });
+        
+      } catch (err) {
+        console.error("Error loading partners:", err);
+        pickupPartners.innerHTML = '<p style="color: var(--gray);">Unable to load pickup partners at this time. Please try again later.</p>';
+      }
+    }
+    
+    // Handle pickup scheduling
+    schedulePickupBtn.addEventListener("click", async function() {
+      const pickupDate = document.getElementById("pickupDate").value;
+      const pickupTime = document.getElementById("pickupTime").value;
+      const specialInstructions = document.getElementById("specialInstructions").value;
+      const contactNumber = document.getElementById("contactNumber").value;
+      const selectedPartner = document.querySelector('.partner-card[style*="border: 2px solid"]');
+      
+      if (!selectedPartner) {
+        alert("Please select a pickup partner");
+        return;
+      }
+      
+      if (!pickupDate || !pickupTime) {
+        alert("Please select both date and time for pickup");
+        return;
+      }
+      
+      if (!contactNumber) {
+        alert("Please provide a contact number for pickup updates");
+        return;
+      }
+      
+      const partnerName = selectedPartner.querySelector('.partner-name').textContent;
+      const partnerPrice = selectedPartner.querySelector('.partner-price').textContent;
+      
+      try {
+        // Simulate API call - in a real app you would send this to your backend
+        const result = { 
+          success: true, 
+          confirmationNumber: 'PC-' + Math.floor(Math.random() * 1000000) 
+        };
+        
+        if (result.success) {
+          // Show confirmation
+          pickupConfirmation.style.display = "block";
+          confirmationDetails.innerHTML = `
+            <p><strong>Partner:</strong> ${partnerName}</p>
+            <p><strong>Date:</strong> ${new Date(pickupDate).toDateString()} (${document.getElementById("pickupTime").options[document.getElementById("pickupTime").selectedIndex].text})</p>
+            <p><strong>Price:</strong> ${partnerPrice}</p>
+            <p><strong>Confirmation #:</strong> ${result.confirmationNumber}</p>
+            <p>You'll receive a confirmation SMS at ${contactNumber}</p>
+          `;
+          
+          // Hide the form
+          schedulePickupBtn.style.display = "none";
+          document.getElementById("pickupDate").style.display = "none";
+          document.getElementById("pickupTime").style.display = "none";
+          document.getElementById("specialInstructions").style.display = "none";
+          document.getElementById("contactNumber").style.display = "none";
+          document.querySelectorAll('label').forEach(label => {
+            if (['pickupDate', 'pickupTime', 'specialInstructions', 'contactNumber'].includes(label.getAttribute('for'))) {
+              label.style.display = "none";
+            }
+          });
+        }
+      } catch (err) {
+        console.error("Error scheduling pickup:", err);
+        alert("There was an error scheduling your pickup. Please try again.");
+      }
+    });
+    
+    // Reset pickup form for new scheduling
+    newPickupBtn.addEventListener("click", function() {
+      pickupConfirmation.style.display = "none";
+      schedulePickupBtn.style.display = "block";
+      document.getElementById("pickupDate").style.display = "block";
+      document.getElementById("pickupTime").style.display = "block";
+      document.getElementById("specialInstructions").style.display = "block";
+      document.getElementById("contactNumber").style.display = "block";
+      document.querySelectorAll('label').forEach(label => {
+        if (['pickupDate', 'pickupTime', 'specialInstructions', 'contactNumber'].includes(label.getAttribute('for'))) {
+          label.style.display = "block";
+        }
+      });
+      
+      // Reset form values
+      document.getElementById("pickupDate").value = "";
+      document.getElementById("pickupTime").value = "";
+      document.getElementById("specialInstructions").value = "";
+      document.getElementById("contactNumber").value = "";
+      document.querySelectorAll('.partner-card').forEach(card => {
+        card.style.border = 'none';
+      });
+    });
+    
+    // Handle suggestion filtering
+    suggestionOptions.addEventListener("click", function(e) {
+      const option = e.target.closest('.suggestion-option');
+      if (!option) return;
+      
+      document.querySelectorAll('.suggestion-option').forEach(opt => {
+        opt.classList.remove('active');
+      });
+      
+      option.classList.add('active');
+      const filterType = option.getAttribute('data-type');
+      displayFilteredSuggestions(filterType);
+    });
+    
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    
+    function formatSuggestionType(type) {
+      return type.split('_').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+    }
+    
+    // Initialize form
+    submitBtn.addEventListener("click", submitProduct);
+  </script>
+</body>
+</html>
